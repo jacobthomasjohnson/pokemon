@@ -3,10 +3,18 @@ import { create } from "zustand";
 const useGameStore = create((set) => ({
       turn: "player",
       log: [],
+      logMessage: null,
+
+      logWindow: (message) => {
+            set({ logMessage: message });
+      },
 
       player: {
             hp: 1000,
             pokemon: "Zekrom",
+            imgSrc: "/zekrom.png",
+            baseSpeed: 90,
+            baseDefense: 120,
             moveset: [
                   {
                         name: "Bolt Strike",
@@ -46,6 +54,9 @@ const useGameStore = create((set) => ({
       enemy: {
             hp: 1000,
             pokemon: "Dialga",
+            imgSrc: "/dialga.png",
+            baseSpeed: 90,
+            baseDefense: 120,
             moveset: [
                   {
                         name: "Bolt Strike",
@@ -106,8 +117,75 @@ const useGameStore = create((set) => ({
             });
       },
 
-      logWindow: (message) => {
-            console.log(message);
+      calcOdds(percentage) {
+            if (percentage < 0 || percentage > 100) {
+                  // throw new Error("Percentage not between 0 and 100.");
+            }
+            return Math.random() * 100 < percentage;
+      },
+
+      critMath: (power) => {
+            return power * 0.25 + 19;
+      },
+
+      calcCrit: (move) => {},
+
+      executeAttack: (move) => {
+            set((state) => {
+                  const { turn, player, enemy, calcOdds, critMath, logWindow, logMessage } =
+                        state; // Destructure state
+                  const { power, accuracy, name } = move; // Destructure move
+                  let totalDamage = 0;
+
+                  console.log('Running logWindow...')
+                  logWindow(`${turn} is attempting to use ${name}`);
+                  console.log(logMessage)
+
+                  // Determine if attack lands
+                  if (calcOdds(accuracy)) {
+                        // Critical hit calculation
+                        const critChance = accuracy;
+                        const isCritical = calcOdds(critChance);
+                        totalDamage =
+                              power + (isCritical ? critMath(power) : 0);
+
+                        // logWindow(
+                        // `${name} ${
+                        // isCritical ? "critically hit" : "hit"
+                        // } and dealt ${totalDamage} damage!`
+                        // );
+                  } else {
+                        // logWindow(`${name} missed!`);
+                  }
+
+                  // Update health based on turn
+                  const newState =
+                        turn === "player"
+                              ? {
+                                      ...state,
+                                      enemy: {
+                                            ...enemy,
+                                            hp: Math.max(
+                                                  0,
+                                                  enemy.hp - totalDamage
+                                            ),
+                                      },
+                                      //   turn: "enemy",
+                                }
+                              : {
+                                      ...state,
+                                      player: {
+                                            ...player,
+                                            hp: Math.max(
+                                                  0,
+                                                  player.hp - totalDamage
+                                            ),
+                                      },
+                                      //   turn: "player",
+                                };
+
+                  return newState;
+            });
       },
 
       // Function to handle player attack

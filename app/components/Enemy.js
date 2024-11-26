@@ -1,14 +1,14 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import useGameStore from "../store/gameStore";
 import Image from "next/image";
+import useGameStore from "../store/gameStore";
 
 const Enemy = () => {
       const enemy = useGameStore((state) => state.enemy);
-      const enemyHealthbar = useRef(null);
-
-      useEffect(() => {}, [enemy]);
+      // console.log("Enemy state:", enemy);
+      if (!enemy) {
+            return <div>Loading enemy data...</div>; // Fallback UI
+      }
 
       return (
             <div className="basis-1/2">
@@ -20,7 +20,6 @@ const Enemy = () => {
                               <div className="text-2xl">{enemy.hp}/100</div>
                               <div className="mt-4 w-[400px] h-[30px] bg-background border-foreground border-4 rounded-lg">
                                     <div
-                                          ref={enemyHealthbar}
                                           id="enemyHealthbar"
                                           className={`w-full h-full bg-green-900`}
                                           style={{ width: `${enemy.hp / 10}%` }}
@@ -30,7 +29,7 @@ const Enemy = () => {
 
                         <div className="">
                               <Image
-                                    src="/zekrom.png"
+                                    src={enemy.imgSrc}
                                     width={300}
                                     height={100}
                                     alt="Zekrom"
