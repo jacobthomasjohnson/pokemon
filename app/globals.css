@@ -13,8 +13,13 @@ body {
       color: var(--foreground);
       background: var(--background);
       font-family: "Share Tech Mono", Helvetica, sans-serif;
+      height: 100vh;
 }
 
 * {
       transition: all 0.05s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.scrollable::-webkit-scrollbar {
+      display: none; /* Optional: Hide scrollbar for aesthetics */
 }
