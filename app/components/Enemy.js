@@ -2,24 +2,31 @@
 
 import Image from "next/image";
 import useGameStore from "./gameStore";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+
+const DAMAGE_ANIM_DURATION = 2000;
 
 const Enemy = () => {
       const enemy = useGameStore((state) => state.enemy);
-      const [isInitialized, setIsInitialized] = useState(false);
-
+      const enemyHP = useGameStore((state) => state.enemy.hp);
+      const previousEnemyHP = useRef(enemyHP);
+      const [damageAnim, setDamageAnim] = useState(false);
+      const showDamageAnim = () => {
+            setDamageAnim(true);
+            setTimeout(() => {
+                  setDamageAnim(false);
+            }, DAMAGE_ANIM_DURATION);
+      };
       useEffect(() => {
-            if (enemy) {
-                  setIsInitialized(true);
+            if (previousEnemyHP.current > enemyHP) {
+                  showDamageAnim();
             }
-      }, [enemy]);
-
-      if (!isInitialized) {
-            return <div>Loading enemy data...</div>;
-      }
+            // Update the previousEnemyHP to the current enemyHP after the comparison
+            previousEnemyHP.current = enemyHP;
+      }, [enemyHP]);
 
       return (
-            <div className="h-full">
+            <div className={`h-full`}>
                   <div className="flex flex-col items-end">
                         <div className="flex w-full flex-col mb-8">
                               <div className="text-4xl font-bold">
@@ -28,7 +35,7 @@ const Enemy = () => {
                               <div className="text-2xl">{enemy.hp}/1000</div>
                               <div className="mt-4 w-full max-w-[400px] h-[30px] bg-background border-foreground border-4 rounded-lg">
                                     <div
-                                          className={`w-full h-full bg-green-700`}
+                                          className={`w-full h-full relative bg-green-700 ${damageAnim ? "show-damage-anim" : ""}`}
                                           style={{
                                                 width: `${
                                                       (enemy.hp / 1000) * 100
