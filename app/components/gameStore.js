@@ -22,43 +22,29 @@ const useGameStore = create((set, get) => ({
       },
 
       usePotion: (potion, isPlayer) => {
-            let currentHP;
-            let newHP;
-            let newState;
-
             set((state) => {
-                  currentHP = isPlayer ? state.player.hp : state.enemy.hp;
-                  newHP =
-                        currentHP + potion.amount > 1000
-                              ? 1000
-                              : currentHP + potion.amount;
+                  const currentHP = isPlayer ? state.player.hp : state.enemy.hp;
+                  const newHP = Math.min(currentHP + potion.amount, 1000);
+                  const updatedPotions = state.potions.map((p) =>
+                        p.name === potion.name
+                              ? { ...p, quantity: Math.max(p.quantity - 1, 0) } // Prevent negative quantity
+                              : p
+                  );
 
-                  if (isPlayer) {
-                        newState = {
-                              ...state,
-                              player: {
-                                    ...state.player,
-                                    hp: newHP,
-                              },
-                              log: [
-                                    ...state.log,
-                                    `You used ${potion.name} to heal for ${potion.amount}.`,
-                              ],
-                        };
-                  } else {
-                        newState = {
-                              ...state,
-                              enemy: {
-                                    ...state.enemy,
-                                    hp: newHP,
-                              },
-                              log: [
-                                    ...state.log,
-                                    `Enemy used ${potion.name} to heal for ${potion.amount}.`,
-                              ],
-                        };
-                  }
-                  return newState;
+                  return {
+                        ...state,
+                        [isPlayer ? "player" : "enemy"]: {
+                              ...state[isPlayer ? "player" : "enemy"],
+                              hp: newHP,
+                        },
+                        potions: updatedPotions,
+                        log: [
+                              ...state.log,
+                              `${isPlayer ? "You" : "Enemy"} used ${
+                                    potion.name
+                              } to heal for ${potion.amount}.`,
+                        ],
+                  };
             });
       },
 
@@ -140,7 +126,7 @@ const useGameStore = create((set, get) => ({
 
                   setTimeout(() => {
                         executeAttack(randomMove, "enemy", "player"); // Enemy attacks
-                  },1)
+                  }, 1);
             }, ENEMY_TURN_DELAY);
       },
 
