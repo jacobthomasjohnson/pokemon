@@ -8,7 +8,7 @@ import {
 } from "./gameUtils";
 
 // Configurable enemy turn delay
-const ENEMY_TURN_DELAY = 2000; // 5 seconds
+const ENEMY_TURN_DELAY = 3000;
 
 const useGameStore = create((set) => ({
       ...createGameState(),

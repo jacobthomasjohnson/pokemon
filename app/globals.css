@@ -6,7 +6,7 @@
 
 :root {
       --background: #100f0f;
-      --foreground: #171717;
+      --foreground: #d8d8d8;
 }
 
 body {
@@ -17,11 +17,12 @@ body {
 }
 
 * {
-      transition: all 2s cubic-bezier(0.075, 0.82, 0.165, 1);
+      transition: all 0.2s cubic-bezier(0.075, 0.82, 0.165, 1);
+      /* outline: 2px solid hsl(calc(360 * var(--rand)), 70%, 50%); */
 }
 
 .scrollable::-webkit-scrollbar {
-      display: none; /* Optional: Hide scrollbar for aesthetics */
+      display: none;
 }
 
 @keyframes damage-anim {
@@ -35,9 +36,22 @@ body {
 }
 
 .show-damage-anim::after {
-      content: '';
+      content: "";
       width: 100%;
       height: 100%;
       position: absolute;
       animation: damage-anim 2s ease-out forwards;
+}
+
+@keyframes log-item-anim {
+      0% {
+            transform: translateX(-99%);
+      }
+      100% {
+            transform: translateX(0%)
+      }
+}
+
+.log-item {
+      animation: log-item-anim 0.2s ease-out forwards;
 }
