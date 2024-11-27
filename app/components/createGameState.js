@@ -7,8 +7,8 @@ export const createGameState = () => ({
                   name: "Bolt Strike",
                   type: "Electric",
                   category: "Physical",
-                  power: 130,
-                  accuracy: 85,
+                  power: 140,
+                  accuracy: 50,
                   pp: 5,
             },
             {
@@ -16,7 +16,7 @@ export const createGameState = () => ({
                   type: "Electric",
                   category: "Special",
                   power: 110,
-                  accuracy: 70,
+                  accuracy: 60,
                   pp: 10,
             },
             {
@@ -31,7 +31,7 @@ export const createGameState = () => ({
                   name: "Crunch",
                   type: "Dark",
                   category: "Physical",
-                  power: 80,
+                  power: 70,
                   accuracy: 100,
                   pp: 15,
             },
@@ -42,7 +42,7 @@ export const createGameState = () => ({
                   type: "Dragon",
                   category: "Special",
                   power: 150,
-                  accuracy: 90,
+                  accuracy: 80,
                   pp: 5,
             },
             {
@@ -57,18 +57,57 @@ export const createGameState = () => ({
                   name: "Earth Power",
                   type: "Ground",
                   category: "Special",
-                  power: 90,
-                  accuracy: 100,
+                  power: 120,
+                  accuracy: 60,
                   pp: 10,
             },
             {
                   name: "Thunder",
                   type: "Electric",
                   category: "Special",
-                  power: 110,
-                  accuracy: 70,
+                  power: 160,
+                  accuracy: 60,
                   pp: 10,
             },
       ]),
+      pokeballs: [
+            {
+                  name: "Pokeball",
+                  quantity: "3",
+                  probability: 10,
+            }
+      ],
+      potions: [
+            {
+                  name: "Potion",
+                  quantity: 2,
+                  effect: "Heal",
+                  amount: 100,
+            },
+            {
+                  name: "Super Potion",
+                  quantity: 0,
+                  effect: "Heal",
+                  amount: 200,
+            },
+            {
+                  name: "Hyper Potion",
+                  quantity: 1,
+                  effect: "Heal",
+                  amount: 300,
+            },
+            {
+                  name: "Max Potion",
+                  quantity: 0,
+                  effect: "Heal",
+                  amount: 1000,
+            },
+            {
+                  name: "Full Restore",
+                  quantity: 0,
+                  effect: "Heal/Buff",
+                  amount: 1000
+            }
+      ],
       log: [],
 });

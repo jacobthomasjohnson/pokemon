@@ -8,9 +8,10 @@ import {
 } from "./gameUtils";
 
 // Configurable enemy turn delay
-const ENEMY_TURN_DELAY = 3000;
+const ENEMY_TURN_DELAY = 2000;
+const ENEMY_POTION_PROBABILITY = 10;
 
-const useGameStore = create((set) => ({
+const useGameStore = create((set, get) => ({
       ...createGameState(),
 
       // Add a log entry
@@ -18,6 +19,47 @@ const useGameStore = create((set) => ({
             set((state) => ({
                   log: [...state.log, message],
             }));
+      },
+
+      usePotion: (potion, isPlayer) => {
+            let currentHP;
+            let newHP;
+            let newState;
+
+            set((state) => {
+                  currentHP = isPlayer ? state.player.hp : state.enemy.hp;
+                  newHP =
+                        currentHP + potion.amount > 1000
+                              ? 1000
+                              : currentHP + potion.amount;
+
+                  if (isPlayer) {
+                        newState = {
+                              ...state,
+                              player: {
+                                    ...state.player,
+                                    hp: newHP,
+                              },
+                              log: [
+                                    ...state.log,
+                                    `You used ${potion.name} to heal for ${potion.amount}.`,
+                              ],
+                        };
+                  } else {
+                        newState = {
+                              ...state,
+                              enemy: {
+                                    ...state.enemy,
+                                    hp: newHP,
+                              },
+                              log: [
+                                    ...state.log,
+                                    `Enemy used ${potion.name} to heal for ${potion.amount}.`,
+                              ],
+                        };
+                  }
+                  return newState;
+            });
       },
 
       executeAttack: (move, attackerType, defenderType) => {
@@ -41,7 +83,7 @@ const useGameStore = create((set) => ({
                   }
 
                   // Calculate damage
-                  const isCritical = calculateCritical(15); // 15% crit chance
+                  const isCritical = calculateCritical(35); // 15% crit chance
                   const damage = calculateDamage(move, isCritical);
 
                   // Update defender's HP and log the attack
@@ -64,17 +106,21 @@ const useGameStore = create((set) => ({
 
       enemyTurn: () => {
             let randomMove; // Declare randomMove in a shared scope
+            let randomPotion;
+            let usingPotion;
 
             set((state) => {
                   const enemy = state.enemy;
+                  const potions = state.potions;
 
-                  // Randomly select an enemy move
+                  randomPotion =
+                        potions[Math.floor(Math.random() * potions.length)];
+
                   randomMove =
                         enemy.moveset[
                               Math.floor(Math.random() * enemy.moveset.length)
                         ];
 
-                  // Log the preparation step immediately
                   return {
                         log: [
                               ...state.log,
@@ -83,13 +129,19 @@ const useGameStore = create((set) => ({
                   };
             });
 
-            // Delay execution of the enemy attack
             setTimeout(() => {
-                  set((state) => {
-                        state.executeAttack(randomMove, "enemy", "player"); // Use the shared randomMove
-                        return {}; // Return empty state for consistency
-                  });
-            }, ENEMY_TURN_DELAY); // 5-second delay
+                  const { usePotion, executeAttack } = get(); // Access the store functions correctly
+
+                  usingPotion = Math.random() * 100 < ENEMY_POTION_PROBABILITY;
+
+                  if (usingPotion) {
+                        usePotion(randomPotion, false); // Enemy uses a potion
+                  }
+
+                  setTimeout(() => {
+                        executeAttack(randomMove, "enemy", "player"); // Enemy attacks
+                  },1)
+            }, ENEMY_TURN_DELAY);
       },
 
       playerAttack: (move) => {

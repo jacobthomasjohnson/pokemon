@@ -1,6 +1,12 @@
 import { useState } from "react";
+import useGameStore from "./gameStore";
 
 export default function InventoryButton() {
+      const potions = useGameStore((state) => state.potions);
+      const pokeballs = useGameStore((state) => state.pokeballs);
+
+      const usePotion = useGameStore((state) => state.usePotion);
+
       const [inventoryOpen, setInventoryOpen] = useState(false);
       const toggleMenu = () => {
             setInventoryOpen(!inventoryOpen);
@@ -23,7 +29,7 @@ export default function InventoryButton() {
                         }`}
                         onClick={toggleMenu}
                   >
-                        {!inventoryOpen && "Inventory"}
+                        {!inventoryOpen && "INVENTORY"}
                         {inventoryOpen && "CLOSE"}
                   </div>
                   <div
@@ -36,25 +42,43 @@ export default function InventoryButton() {
                         <div className="flex h-full w-full gap-6 flex-col items-start justify-center">
                               <div className="text-5xl lg:text-7xl p-8 w-full">
                                     <div
-                                          className="border-b p-4"
+                                          className="p-4 hover:cursor-pointer hover:underline"
                                           onClick={() => toggleModal("potions")}
                                     >
                                           Potions
                                     </div>
                                     <div
-                                          className={`h-0 px-4 max-h-0 overflow-hidden text-xl lg:text-4xl ${
+                                          className={`h-0 px-4 max-h-0 overflow-hidden text-2xl lg:text-4xl ${
                                                 isOpen.potions
                                                       ? "max-h-[300px] h-[300px] py-4"
                                                       : ""
                                           } `}
                                     >
-                                          This is where you would find your
-                                          Potions.
+                                          {potions.map((potion, index) => {
+                                                const noPotions =
+                                                      potion.quantity === 0;
+                                                return (
+                                                      <div
+                                                            key={index}
+                                                            className={`flex w-full justify-between mb-4 hover:cursor-pointer hover:underline hover:text-amber-300 ${noPotions ? "pointer-events-none opacity-30" : ""}`}
+                                                          onClick={() => usePotion(potion, true)}
+                                                      >
+                                                            <div>
+                                                                  {potion.name}
+                                                            </div>
+                                                            <div>
+                                                                  {
+                                                                        potion.quantity
+                                                                  }
+                                                            </div>
+                                                      </div>
+                                                );
+                                          })}
                                     </div>
                               </div>
                               <div className="text-5xl lg:text-7xl p-8 w-full">
                                     <div
-                                          className="border-b p-4"
+                                          className="p-4 hover:cursor-pointer hover:underline"
                                           onClick={() =>
                                                 toggleModal("pokeballs")
                                           }
@@ -68,8 +92,17 @@ export default function InventoryButton() {
                                                       : ""
                                           } `}
                                     >
-                                          This is where you would find your
-                                          Pokeballs.
+                                          {pokeballs.map((pokeball, index) => (
+                                                <div
+                                                      key={index}
+                                                      className="flex w-full justify-between mb-4 hover:cursor-pointer hover:underline hover:text-amber-300"
+                                                >
+                                                      <div>{pokeball.name}</div>
+                                                      <div>
+                                                            {pokeball.quantity}
+                                                      </div>
+                                                </div>
+                                          ))}
                                     </div>
                               </div>
                         </div>
